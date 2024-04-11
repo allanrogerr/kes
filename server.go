@@ -572,16 +572,20 @@ func (s *Server) createKey(resp *api.Response, req *api.Request) {
 		return
 	}
 
+	fmt.Println("run list")
+	s.listKeys(resp, req)
 	if err = s.state.Load().Keys.Create(req.Context(), req.Resource, crypto.KeyVersion{
 		Key:       key,
 		HMACKey:   hmac,
 		CreatedAt: time.Now().UTC(),
 		CreatedBy: req.Identity,
 	}); err != nil {
+		fmt.Println("err", err)
 		if err, ok := api.IsError(err); ok {
 			resp.Failr(err)
 			return
 		}
+		fmt.Println("continue")
 
 		s.state.Load().Log.ErrorContext(req.Context(), err.Error(), "req", req)
 		resp.Fail(http.StatusBadGateway, "failed to create key")
@@ -720,6 +724,9 @@ func (s *Server) listKeys(resp *api.Response, req *api.Request) {
 		resp.Fail(http.StatusBadGateway, "failed to list keys")
 	}
 
+	for name, k := range names {
+		fmt.Println("name", name, k)
+	}
 	api.ReplyWith(resp, http.StatusOK, api.ListKeysResponse{
 		Names:      names,
 		ContinueAt: prefix,
