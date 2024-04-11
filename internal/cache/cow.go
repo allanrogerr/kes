@@ -180,10 +180,10 @@ func (c *Cow[K, V]) DeleteFunc(f func(K, V) bool) {
 	fmt.Println("len(w)", len(w))
 	fmt.Println("len(r)", len(r))
 	for k, v := range r {
-		fmt.Println("k,v", k, v)
+		fmt.Println("k,v", k, &v)
 		if !f(k, v) {
 			w[k] = v
-			fmt.Println("w[k] = v", w[k], v)
+			fmt.Println("w[k] = v")
 		}
 	}
 
