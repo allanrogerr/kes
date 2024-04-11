@@ -355,6 +355,13 @@ func (c *keyCache) Get(ctx context.Context, name string) (crypto.KeyVersion, err
 // or when there are no (more) keys starting with the prefix, the
 // returned prefix is empty.
 func (c *keyCache) List(ctx context.Context, prefix string, n int) ([]string, string, error) {
+	// Check cache first
+	fmt.Println("List")
+	cacheKeys := c.cache.Keys()
+	if len(cacheKeys) > 0 {
+		fmt.Println("found cached keys list")
+		return keystore.List(cacheKeys, prefix, n)
+	}
 	return c.store.List(ctx, prefix, n)
 }
 
