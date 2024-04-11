@@ -262,11 +262,11 @@ func (c *keyCache) Status(ctx context.Context) (KeyStoreState, error) {
 func (c *keyCache) Create(ctx context.Context, name string, key crypto.KeyVersion) error {
 	log.Println("Create")
 	// Check cache first
-	cacheKey, err := c.Get(ctx, name)
-	if err == nil {
-		fmt.Println("cacheKey", cacheKey)
-		return err
-	}
+	//cacheKey, err := c.Get(ctx, name)
+	//if err == nil {
+	//	fmt.Println("cacheKey", cacheKey)
+	//	return err
+	//}
 
 	b, err := crypto.EncodeKeyVersion(key)
 	if err != nil {
@@ -357,11 +357,11 @@ func (c *keyCache) Get(ctx context.Context, name string) (crypto.KeyVersion, err
 func (c *keyCache) List(ctx context.Context, prefix string, n int) ([]string, string, error) {
 	// Check cache first
 	fmt.Println("List")
-	cacheKeys := c.cache.Keys()
-	if len(cacheKeys) > 0 {
-		fmt.Println("found cached keys list")
-		return keystore.List(cacheKeys, prefix, n)
-	}
+	//cacheKeys := c.cache.Keys()
+	//if len(cacheKeys) > 0 {
+	//	fmt.Println("found cached keys list")
+	//	return keystore.List(cacheKeys, prefix, n)
+	//}
 	return c.store.List(ctx, prefix, n)
 }
 
