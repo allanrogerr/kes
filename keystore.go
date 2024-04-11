@@ -212,7 +212,7 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 			log.Println("10*time.Second 1", err)
 			c.offline.Store(true)
 		} else {
-			log.Println("10*time.Second 2", err)
+			log.Println("not offline", err)
 			c.offline.Store(false)
 		}
 	})
