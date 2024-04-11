@@ -261,6 +261,13 @@ func (c *keyCache) Status(ctx context.Context) (KeyStoreState, error) {
 // no such entry exists. Otherwise, kes.ErrKeyExists is returned.
 func (c *keyCache) Create(ctx context.Context, name string, key crypto.KeyVersion) error {
 	log.Println("Create")
+	// Check cache first
+	cacheKey, err := c.Get(ctx, name)
+	if err == nil {
+		fmt.Println("cacheKey", cacheKey)
+		return err
+	}
+
 	b, err := crypto.EncodeKeyVersion(key)
 	if err != nil {
 		return err

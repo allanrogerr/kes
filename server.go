@@ -851,7 +851,7 @@ func (s *Server) generateKey(resp *api.Response, req *api.Request) {
 		resp.Fail(http.StatusInternalServerError, "failed to generate encryption key")
 		return
 	}
-	fmt.Println("ciphertext", ciphertext)
+	fmt.Println("dataKey", string(dataKey))
 	api.ReplyWith(resp, http.StatusOK, api.GenerateKeyResponse{
 		Plaintext:  dataKey,
 		Ciphertext: ciphertext,
