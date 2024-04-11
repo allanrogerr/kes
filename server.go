@@ -232,6 +232,7 @@ func (s *Server) Update(conf *Config) (io.Closer, error) {
 	}
 
 	old := s.state.Load()
+	fmt.Println("Update server")
 	state := &serverState{
 		Addr:       old.Addr,
 		StartTime:  old.StartTime,
@@ -398,6 +399,7 @@ func (s *Server) listen(ctx context.Context, ln net.Listener, conf *Config) (net
 		return nil, errors.New("kes: server already started")
 	}
 
+	fmt.Println("Listen server")
 	state := &serverState{
 		Addr:       ln.Addr(),
 		StartTime:  time.Now(),

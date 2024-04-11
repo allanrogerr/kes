@@ -7,7 +7,9 @@ package kes
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"log"
 	"slices"
 	"strings"
 	"sync/atomic"
@@ -95,6 +97,7 @@ func (ks *MemKeyStore) Create(_ context.Context, name string, value []byte) erro
 // Delete removes the entry. It may return either no error or
 // kes.ErrKeyNotFound if no such entry exists.
 func (ks *MemKeyStore) Delete(_ context.Context, name string) error {
+	log.Println("Delete")
 	if !ks.keys.Delete(name) {
 		return kes.ErrKeyNotFound
 	}
@@ -166,6 +169,7 @@ func (ks *MemKeyStore) Close() error { return nil }
 // garbage collector evicting cache entries and release
 // associated resources.
 func newCache(store KeyStore, conf *CacheConfig) *keyCache {
+	log.Println("newCache")
 	ctx, stop := context.WithCancel(context.Background())
 	c := &keyCache{
 		store: store,
@@ -245,7 +249,9 @@ type cacheEntry struct {
 // It immediately returns an error if the backend keystore is not
 // reachable and offline caching is enabled.
 func (c *keyCache) Status(ctx context.Context) (KeyStoreState, error) {
+
 	if c.offline.Load() {
+		fmt.Println("offline")
 		return KeyStoreState{}, &keystore.ErrUnreachable{Err: errors.New("keystore is offline")}
 	}
 	return c.store.Status(ctx)
@@ -254,6 +260,7 @@ func (c *keyCache) Status(ctx context.Context) (KeyStoreState, error) {
 // Create creates a new key with the given name if and only if
 // no such entry exists. Otherwise, kes.ErrKeyExists is returned.
 func (c *keyCache) Create(ctx context.Context, name string, key crypto.KeyVersion) error {
+	log.Println("Create")
 	b, err := crypto.EncodeKeyVersion(key)
 	if err != nil {
 		return err
@@ -271,6 +278,7 @@ func (c *keyCache) Create(ctx context.Context, name string, key crypto.KeyVersio
 // cache. It may return either no error or kes.ErrKeyNotFound if no
 // such entry exists.
 func (c *keyCache) Delete(ctx context.Context, name string) error {
+	log.Println("Delete")
 	if err := c.store.Delete(ctx, name); err != nil {
 		if errors.Is(err, kes.ErrKeyNotFound) {
 			return err
