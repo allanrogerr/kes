@@ -803,6 +803,10 @@ func (s *Server) encryptKey(resp *api.Response, req *api.Request) {
 }
 
 func (s *Server) generateKey(resp *api.Response, req *api.Request) {
+	fmt.Println("generateKey")
+
+	fmt.Println("run list generateKey")
+	s.listKeys(resp, req)
 	if !validName(req.Resource) {
 		resp.Failf(http.StatusBadRequest, "key name '%s' is empty, too long or contains invalid characters", req.Resource)
 		return
@@ -846,7 +850,7 @@ func (s *Server) generateKey(resp *api.Response, req *api.Request) {
 		resp.Fail(http.StatusInternalServerError, "failed to generate encryption key")
 		return
 	}
-
+	fmt.Println("dataKey", dataKey)
 	api.ReplyWith(resp, http.StatusOK, api.GenerateKeyResponse{
 		Plaintext:  dataKey,
 		Ciphertext: ciphertext,
