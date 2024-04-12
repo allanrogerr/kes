@@ -175,6 +175,7 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 		store: store,
 		stop:  stop,
 	}
+	fmt.Println("expiry", conf.Expiry, conf.ExpiryUnused, conf.ExpiryOffline)
 
 	checkOffline := func() {
 		_, err := c.store.Status(ctx)
