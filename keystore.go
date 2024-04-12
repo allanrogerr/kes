@@ -175,7 +175,6 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 		store: store,
 		stop:  stop,
 	}
-	fmt.Println("expiry", conf.Expiry, conf.ExpiryUnused, conf.ExpiryOffline)
 
 	checkOffline := func() {
 		_, err := c.store.Status(ctx)
@@ -189,6 +188,7 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 	}
 
 	go c.gc(ctx, conf.Expiry, func() {
+		fmt.Println("expiry", conf.Expiry, conf.ExpiryUnused, conf.ExpiryOffline)
 		checkOffline()
 		if offline := c.offline.Load(); !offline {
 			log.Println("conf.Expiry")
@@ -196,6 +196,7 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 		}
 	})
 	go c.gc(ctx, conf.ExpiryUnused/2, func() {
+		fmt.Println("expiry", conf.Expiry, conf.ExpiryUnused, conf.ExpiryOffline)
 		checkOffline()
 		if offline := c.offline.Load(); !offline {
 			log.Println("conf.ExpiryUnused/2")
@@ -215,6 +216,7 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 		}
 	})
 	go c.gc(ctx, conf.ExpiryOffline, func() {
+		fmt.Println("expiry", conf.Expiry, conf.ExpiryUnused, conf.ExpiryOffline)
 		checkOffline()
 		if offline := c.offline.Load(); offline {
 			log.Println("conf.ExpiryOffline")
