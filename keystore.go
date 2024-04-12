@@ -176,13 +176,26 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 		stop:  stop,
 	}
 
+	checkOffline := func() {
+		_, err := c.store.Status(ctx)
+		if err != nil && !errors.Is(err, context.Canceled) {
+			log.Println("offline", err)
+			c.offline.Store(true)
+		} else {
+			log.Println("not offline", err)
+			c.offline.Store(false)
+		}
+	}
+
 	go c.gc(ctx, conf.Expiry, func() {
+		checkOffline()
 		if offline := c.offline.Load(); !offline {
 			log.Println("conf.Expiry")
 			c.cache.DeleteAll()
 		}
 	})
 	go c.gc(ctx, conf.ExpiryUnused/2, func() {
+		checkOffline()
 		if offline := c.offline.Load(); !offline {
 			log.Println("conf.ExpiryUnused/2")
 			c.cache.DeleteFunc(func(_ string, e *cacheEntry) bool {
@@ -201,20 +214,14 @@ func newCache(store KeyStore, conf *CacheConfig) *keyCache {
 		}
 	})
 	go c.gc(ctx, conf.ExpiryOffline, func() {
+		checkOffline()
 		if offline := c.offline.Load(); offline {
 			log.Println("conf.ExpiryOffline")
 			c.cache.DeleteAll()
 		}
 	})
 	go c.gc(ctx, 10*time.Second, func() {
-		_, err := c.store.Status(ctx)
-		if err != nil && !errors.Is(err, context.Canceled) {
-			log.Println("10*time.Second 1", err)
-			c.offline.Store(true)
-		} else {
-			log.Println("not offline", err)
-			c.offline.Store(false)
-		}
+		checkOffline()
 	})
 	return c
 }
